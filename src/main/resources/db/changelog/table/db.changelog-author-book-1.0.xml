@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<databaseChangeLog
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+			xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+			xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	
+		<changeSet author="arvic.loveria" id="1_Created_new_table_Author_Book">
+			<!-- Validations -->
+			<preConditions>
+				<not>
+					<tableExists tableName="AUTHOR_BOOK"/>
+				</not>
+			</preConditions>
+			<!-- Create Table -->
+			<createTable tableName="AUTHOR_BOOK">
+				<column autoIncrement="true" name="author_book_id" type="INT">
+					<constraints primaryKey="true"/>
+				</column>
+				<column name="book_id" type="INT">
+					<constraints nullable="false" foreignKeyName="fk_author_book_book" references="book(book_id)" />
+				</column>
+				<column name="author_id" type="INT">
+					<constraints nullable="false" foreignKeyName="fk_author_book_author" references="author(author_id)"/>
+				</column>         
+			</createTable>
+			<!-- Roll back -->
+			<rollback>
+				<dropTable tableName="AUTHOR_BOOK"/>
+			</rollback>
+			<comment>Created new table named 'Author_Book'</comment>
+		</changeSet>
+	</databaseChangeLog>

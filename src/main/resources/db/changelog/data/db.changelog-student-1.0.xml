@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<databaseChangeLog
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+			xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+			xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	
+		<changeSet author="arvic.loveria" id="2_Inserted_data_in_student_table">
+			<!-- Validations -->
+			<preConditions>
+				<tableExists tableName="AUTHOR"/>
+			</preConditions>
+			<!-- Create Table -->
+			<sql dbms="h2, oracle" splitStatements="true">
+				INSERT INTO STUDENT (first_name, middle_name, last_name, email, birth_date) VALUES ('Arvic', 'A', 'Loveria', 'arvic10497@gmail.com', '2000-07-13');
+				INSERT INTO STUDENT (first_name, middle_name, last_name, email, birth_date) VALUES ('John', null, 'Doe', 'johndoe@gmail.com', '1999-04-21');
+			</sql>
+			<comment>Inserted new record in table 'AUTHOR'</comment>
+		</changeSet>
+	</databaseChangeLog>

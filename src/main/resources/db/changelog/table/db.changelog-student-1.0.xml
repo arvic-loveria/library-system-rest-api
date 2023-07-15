@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<databaseChangeLog
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+			xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+			xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	
+		<changeSet author="arvic.loveria" id="1_Created_new_table_Student">
+			<!-- Validations -->
+			<preConditions>
+				<not>
+					<tableExists tableName="STUDENT"/>
+				</not>
+			</preConditions>
+			<!-- Create Table -->
+			<createTable tableName="STUDENT">
+				<column autoIncrement="true" name="student_id" type="INT">
+					<constraints primaryKey="true"/>
+				</column>
+				<column name="first_name" type="VARCHAR2(255)">
+					<constraints nullable="false"/>
+				</column>
+				<column name="middle_name" type="VARCHAR2(255)">
+					<constraints nullable="true"/>
+				</column>
+				<column name="last_name" type="VARCHAR2(255)">
+					<constraints nullable="false"/>
+				</column>
+				<column name="email" type="VARCHAR2(255)">
+					<constraints nullable="true"/>
+				</column>   
+				<column name="birth_date" type="date">
+					<constraints nullable="true"/>
+				</column>
+			</createTable>
+			<!-- Roll back -->
+			<rollback>
+				<dropTable tableName="STUDENT"/>
+			</rollback>
+			<comment>Created new table named 'Student'</comment>
+		</changeSet>
+	</databaseChangeLog>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<databaseChangeLog
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+			xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+			xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	
+		<changeSet author="arvic.loveria" id="2_Inserted_data_in_author_table">
+			<!-- Validations -->
+			<preConditions>
+				<tableExists tableName="AUTHOR"/>
+			</preConditions>
+			<!-- Create Table -->
+			<sql dbms="h2, oracle" splitStatements="true">
+				INSERT INTO AUTHOR (first_name, middle_name, last_name) VALUES ('Suzanne', null, 'Collins');
+				INSERT INTO AUTHOR (first_name, middle_name, last_name) VALUES ('J.K.', null, 'Rowling');
+				INSERT INTO AUTHOR (first_name, middle_name, last_name) VALUES ('Jane', null, 'Austen');
+				INSERT INTO AUTHOR (first_name, middle_name, last_name) VALUES ('Harper', null, 'Lee');
+				INSERT INTO AUTHOR (first_name, middle_name, last_name) VALUES ('Stephenie', null, 'Meyer');
+			</sql>
+			<comment>Inserted new record in table 'AUTHOR'</comment>
+		</changeSet>
+	</databaseChangeLog>

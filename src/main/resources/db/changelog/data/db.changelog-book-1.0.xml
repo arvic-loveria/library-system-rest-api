@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<databaseChangeLog
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+			xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+			xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	
+		<changeSet author="arvic.loveria" id="2_Inserted_data_in_book_table">
+			<!-- Validations -->
+			<preConditions>
+				<tableExists tableName="BOOK"/>
+			</preConditions>
+			<!-- Create Table -->
+			<sql dbms="h2, oracle" splitStatements="true">
+				INSERT INTO BOOK (book_name, book_description) VALUES ('The Hunger Games', null);
+				INSERT INTO BOOK (book_name, book_description) VALUES ('Harry Potter and the Order of the Phoenix', null);
+				INSERT INTO BOOK (book_name, book_description) VALUES ('Pride and Prejudice', null);
+				INSERT INTO BOOK (book_name, book_description) VALUES ('To Kill a Mockingbird', null);
+				INSERT INTO BOOK (book_name, book_description) VALUES ('Twilight', null);
+				INSERT INTO BOOK (book_name, book_description) VALUES ('Catching Fire', null);
+				INSERT INTO BOOK (book_name, book_description) VALUES ('Gregor The Overlander', null);
+				INSERT INTO BOOK (book_name, book_description) VALUES ('The Ballad of Songbirds and Snakes', null);
+			</sql>
+			<comment>Inserted new record in table 'BOOK'</comment>
+		</changeSet>
+	</databaseChangeLog>

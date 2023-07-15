@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<databaseChangeLog
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+			xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+			xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	
+		<changeSet author="arvic.loveria" id="1_Created_new_table_Borrowed_Book">
+			<!-- Validations -->
+			<preConditions>
+				<not>
+					<tableExists tableName="BORROWED_BOOK"/>
+				</not>
+			</preConditions>
+			<!-- Create Table -->
+			<createTable tableName="BORROWED_BOOK">
+				<column autoIncrement="true" name="borrowed_id" type="INT">
+					<constraints primaryKey="true"/>
+				</column>
+				<column name="book_id" type="INT">
+					<constraints nullable="false" foreignKeyName="fk_book_borrowed_book" references="book(book_id)"/>
+				</column>
+				<column name="student_id" type="INT">
+					<constraints nullable="false" foreignKeyName="fk_borrowed_book_student" references="student(student_id)"/>
+				</column>
+				<column name="date_borrowed" type="datetime">
+					<constraints nullable="true"/>
+				</column>
+				<column name="date_returned" type="datetime">
+					<constraints nullable="true"/>
+				</column>
+			</createTable>
+			<!-- Roll back -->
+			<rollback>
+				<dropTable tableName="BORROWED_BOOK"/>
+			</rollback>
+			<comment>Created new table named 'Borrowed_Book'</comment>
+		</changeSet>
+	</databaseChangeLog>
