@@ -30,7 +30,7 @@ public class BookController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<BorrowResponse> processBorrowBook(@RequestBody BorrowRequest borrowRequest) {
+	public ResponseEntity<BorrowResponse> borrowBooks(@RequestBody BorrowRequest borrowRequest) {
 		
 		return ResponseEntity.ok(bookService.processBorrowRequest(borrowRequest));
 		
