@@ -34,9 +34,9 @@ public class AuthorControllerTest {
 			   	.andExpect(jsonPath("$", hasSize(1)))
 			   	.andExpect(jsonPath("$.[0].bookId", is(3)))
 				.andExpect(jsonPath("$.[0].bookName", is("Pride and Prejudice")))
-				.andExpect(jsonPath("$.[0].author.authorId", is(3)))
-				.andExpect(jsonPath("$.[0].author.firstName", is("Jane")))
-				.andExpect(jsonPath("$.[0].author.lastName", is("Austen")));
+				.andExpect(jsonPath("$.[0].authors[0].authorId", is(3)))
+				.andExpect(jsonPath("$.[0].authors[0].firstName", is("Jane")))
+				.andExpect(jsonPath("$.[0].authors[0].lastName", is("Austen")));
 		
 	}
 	

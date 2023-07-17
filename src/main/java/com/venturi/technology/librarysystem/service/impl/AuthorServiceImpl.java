@@ -30,35 +30,31 @@ public class AuthorServiceImpl implements AuthorService {
 	public List<BookAuthor> getBookByAuthorId(Long authorId) {
 
 		/*
-		 * authorRepository.findById will generate the following SQL query:
+		 * authorRepository.findById will generate below SQL query:
+		 * 		select author_id, first_name, middle_name, last_name from author where author_id = ?
+		 *  
+		 * and because the related Object(authorEntity.getAuthorBooks()) of AuthorEntity is being called 
+		 * within this method it will generate another SQL query like below, only after the related object was called 
+		 * due to default FetchType of @OneToMany which is FetchType.Lazy.
 		 * 
-		 * select author_id, first_name, middle_name, last_name from author where author_id = ? 
+		 * 		select a.author_book_id, a.author_id, b.book_id, b.book_name, b.book_description 
+		 * 		from 
+		 * 			author_book a
+		 * 		left join 
+		 * 			book b 
+		 * 				on b.book_id = a.book_id
+		 * 		where 
+		 *  		a.author_id = ?
 		 * 
+		 * "left join book" was added because of AuthorBookEntity.book is annotated as 
+		 *  @ManyToOne @JoinColumn(name = "book_id") which eagerly fetch the records of the related entity/table
+		 *  due to the default FetchType of @ManyToOne annotation which is FetchType.EAGER
+		 *  
 		 */
 		AuthorEntity authorEntity = authorRepository.findById(authorId)
 				.orElseThrow(() -> new AuthorNotFoundException("authorId: " + authorId + " not found"));
 
 		List<BookAuthor> bookAuthors = new ArrayList<>();
-
-		/*
-		 * when authorEntity.getAuthorBooks() gets called, it will generate another query
-		 * as this field was annotated as @OneToMany(mappedBy = "author") which used the default FetchType
-		 * which is FetchType.Lazy. Generated query will be:
-		 * 
-		 * select a.author_book_id, a.author_id, b.book_id, b.book_name, b.book_description 
-		 * from 
-		 * 	author_book a
-		 * left join 
-		 * 	book b 
-		 * 		on b.book_id = a.book_id
-		 * where 
-		 *  a.author_id = ?
-		 *  
-		 *  "left join book" was added because of AuthorBookEntity.book is annotated as 
-		 *  @ManyToOne @JoinColumn(name = "book_id") which eagerly fetch the records of the related entity/table
-		 *  due to the default FetchType of @ManyToOne annotation which is FetchType.EAGER
-		 * 
-		 */
 		authorEntity.getAuthorBooks().forEach(authorBookEntity -> {
 			
 			/*
@@ -67,7 +63,7 @@ public class AuthorServiceImpl implements AuthorService {
 			 * select borrowed_id, book_id, student_id, date_borrowed, date_returned
 			 * from borrowed_book
 			 * where book_id = ?
-			 * 	and date_returned IS NULL
+			 * 		 and date_returned IS NULL
 			 * 
 			 */
 			Optional<BorrowedBookEntity> borrowedBookEntity = borrowedBookRepository
