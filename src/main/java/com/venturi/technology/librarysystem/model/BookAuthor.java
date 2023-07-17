@@ -1,6 +1,7 @@
 package com.venturi.technology.librarysystem.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -14,6 +15,6 @@ import lombok.EqualsAndHashCode;
 public class BookAuthor extends Book implements Serializable {
 	
 	private static final long serialVersionUID = 3692489973718573209L;
-	private Author author;
+	private List<Author> authors;
 	
 }

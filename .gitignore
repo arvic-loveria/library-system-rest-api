@@ -31,3 +31,16 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+.bin/
+target/
+/bin/
+.mvn/
+HELP.md
+mvnw
+mvnw.cmd
+.factorypath

@@ -1,11 +1,13 @@
 package com.venturi.technology.librarysystem.entity;
 
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,8 +28,8 @@ public class AuthorEntity {
 	@Column(name = "last_name")
 	private String lastName;
 	
-	@OneToOne(mappedBy = "author")
-	private AuthorBookEntity authorBook;
+	@OneToMany(mappedBy = "author")
+	private Set<AuthorBookEntity> authorBooks;
 	
 	public Long getAuthorId() {
 		return authorId;
@@ -61,12 +63,12 @@ public class AuthorEntity {
 		this.lastName = lastName;
 	}
 
-	public AuthorBookEntity getAuthorBook() {
-		return authorBook;
+	public Set<AuthorBookEntity> getAuthorBooks() {
+		return authorBooks;
 	}
 
-	public void setAuthorBook(AuthorBookEntity authorBook) {
-		this.authorBook = authorBook;
+	public void setAuthorBooks(Set<AuthorBookEntity> authorBooks) {
+		this.authorBooks = authorBooks;
 	}
-	
+
 }

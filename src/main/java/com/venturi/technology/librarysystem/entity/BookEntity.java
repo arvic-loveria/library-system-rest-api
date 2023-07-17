@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,8 +25,8 @@ public class BookEntity {
 	@Column(name = "book_description")
 	private String bookDescription;
 		
-	@OneToOne(mappedBy = "book")
-	private AuthorBookEntity authorBook;
+	@OneToMany(mappedBy = "book")
+	private Set<AuthorBookEntity> authorBooks;
 	
 	@OneToMany(mappedBy = "book")
 	private Set<BorrowedBookEntity> borrowedBooks;
@@ -56,12 +55,12 @@ public class BookEntity {
 		this.bookDescription = bookDescription;
 	}
 
-	public AuthorBookEntity getAuthorBook() {
-		return authorBook;
+	public Set<AuthorBookEntity> getAuthorBooks() {
+		return authorBooks;
 	}
 
-	public void setAuthorBook(AuthorBookEntity authorBook) {
-		this.authorBook = authorBook;
+	public void setAuthorBooks(Set<AuthorBookEntity> authorBooks) {
+		this.authorBooks = authorBooks;
 	}
 
 	public Set<BorrowedBookEntity> getBorrowedBooks() {

@@ -20,6 +20,7 @@
 				INSERT INTO AUTHOR_BOOK (book_id, author_id) VALUES ((select book_id from book where book_name = 'Harry Potter and the Order of the Phoenix'), (select author_id from author where first_name = 'J.K.'));
 				INSERT INTO AUTHOR_BOOK (book_id, author_id) VALUES ((select book_id from book where book_name = 'Pride and Prejudice'), (select author_id from author where first_name = 'Jane'));
 				INSERT INTO AUTHOR_BOOK (book_id, author_id) VALUES ((select book_id from book where book_name = 'To Kill a Mockingbird'), (select author_id from author where first_name = 'Harper'));
+				INSERT INTO AUTHOR_BOOK (book_id, author_id) VALUES ((select book_id from book where book_name = 'To Kill a Mockingbird'), (select author_id from author where first_name = 'Suzanne'));
 				INSERT INTO AUTHOR_BOOK (book_id, author_id) VALUES ((select book_id from book where book_name = 'Twilight'), (select author_id from author where first_name = 'Stephenie'));
 			</sql>
 			<comment>Inserted new record in table 'BOOK'</comment>
