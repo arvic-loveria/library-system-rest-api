@@ -60,15 +60,12 @@ public class BookServiceImpl implements BookService {
 		BookEntity bookEntity = bookRepository.findById(bookId)
 				.orElseThrow(() -> new BookNotFoundException("bookId: " + bookId + " not found"));
 
-		Book bookAuthors = new Book();
-		bookAuthors.setBookId(bookEntity.getBookId());
-		bookAuthors.setBookName(bookEntity.getBookName());
-		
-		List<Author> authors = new ArrayList<>();
-		authors.add(new Author(bookEntity.getAuthor()));
-		bookAuthors.setAuthors(authors);
+		Book book = new Book();
+		book.setBookId(bookEntity.getBookId());
+		book.setBookName(bookEntity.getBookName());
+		book.setAuthor(new Author(bookEntity.getAuthor()));
 
-		return bookAuthors;
+		return book;
 	}
 
 	@Override
