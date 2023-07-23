@@ -29,7 +29,7 @@ public class AuthorEntity {
 	private String lastName;
 	
 	@OneToMany(mappedBy = "author")
-	private Set<AuthorBookEntity> authorBooks;
+	private Set<BookEntity> books;
 	
 	public Long getAuthorId() {
 		return authorId;
@@ -63,12 +63,13 @@ public class AuthorEntity {
 		this.lastName = lastName;
 	}
 
-	public Set<AuthorBookEntity> getAuthorBooks() {
-		return authorBooks;
+	public Set<BookEntity> getBooks() {
+		return books;
 	}
 
-	public void setAuthorBooks(Set<AuthorBookEntity> authorBooks) {
-		this.authorBooks = authorBooks;
+	public void setBooks(Set<BookEntity> books) {
+		this.books = books;
 	}
+
 
 }

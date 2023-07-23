@@ -23,6 +23,9 @@
 				</column>
 				<column name="book_description" type="VARCHAR2(255)">
 					<constraints nullable="true"/>
+				</column>
+				<column name="author_id" type="INT">
+					<constraints nullable="false" foreignKeyName="fk_book_author" references="author(author_id)"/>
 				</column>           
 			</createTable>
 			<!-- Roll back -->

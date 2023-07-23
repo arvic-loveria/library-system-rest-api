@@ -6,10 +6,10 @@
 			xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 	
-		<changeSet author="arvic.loveria" id="2_Inserted_data_in_book_table">
+		<changeSet author="arvic.loveria" id="2_Inserted_data_in_author_book_table">
 			<!-- Validations -->
 			<preConditions>
-				<tableExists tableName="BOOK"/>
+				<tableExists tableName="AUTHOR_BOOK"/>
 			</preConditions>
 			<!-- Create Table -->
 			<sql dbms="h2, oracle" splitStatements="true">

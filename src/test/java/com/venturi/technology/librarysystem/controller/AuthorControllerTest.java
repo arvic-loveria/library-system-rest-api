@@ -31,12 +31,12 @@ public class AuthorControllerTest {
 		mockMvc.perform(get("/authors/3/books"))
 			   	.andExpect(status().isOk())
 			   	.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-			   	.andExpect(jsonPath("$", hasSize(1)))
-			   	.andExpect(jsonPath("$.[0].bookId", is(3)))
-				.andExpect(jsonPath("$.[0].bookName", is("Pride and Prejudice")))
-				.andExpect(jsonPath("$.[0].authors[0].authorId", is(3)))
-				.andExpect(jsonPath("$.[0].authors[0].firstName", is("Jane")))
-				.andExpect(jsonPath("$.[0].authors[0].lastName", is("Austen")));
+			   	.andExpect(jsonPath("$.books", hasSize(1)))
+			   	.andExpect(jsonPath("$.books[0].bookId", is(3)))
+				.andExpect(jsonPath("$.books[0].bookName", is("Pride and Prejudice")))
+				.andExpect(jsonPath("$.authorId", is(3)))
+				.andExpect(jsonPath("$.firstName", is("Jane")))
+				.andExpect(jsonPath("$.lastName", is("Austen")));
 		
 	}
 	

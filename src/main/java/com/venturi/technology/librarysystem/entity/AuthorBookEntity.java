@@ -17,11 +17,7 @@ public class AuthorBookEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "author_book_id")
 	private Long authorBookId;
-	
-	@ManyToOne
-	@JoinColumn(name = "book_id")
-	private BookEntity book;
-	
+		
 	@ManyToOne
 	@JoinColumn(name = "author_id")
 	private AuthorEntity author;
@@ -32,14 +28,6 @@ public class AuthorBookEntity {
 
 	public void setAuthorBookId(Long authorBookId) {
 		this.authorBookId = authorBookId;
-	}
-
-	public BookEntity getBook() {
-		return book;
-	}
-
-	public void setBook(BookEntity book) {
-		this.book = book;
 	}
 
 	public AuthorEntity getAuthor() {

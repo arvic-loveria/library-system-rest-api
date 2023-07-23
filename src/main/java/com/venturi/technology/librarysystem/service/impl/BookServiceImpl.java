@@ -15,8 +15,10 @@ import com.venturi.technology.librarysystem.exception.StudentNotFoundException;
 import com.venturi.technology.librarysystem.mapping.BorrowBookResponse;
 import com.venturi.technology.librarysystem.mapping.BorrowRequest;
 import com.venturi.technology.librarysystem.model.Author;
-import com.venturi.technology.librarysystem.model.BookAuthor;
+import com.venturi.technology.librarysystem.model.Book;
 import com.venturi.technology.librarysystem.model.BorrowResponse;
+import com.venturi.technology.librarysystem.model.dto.BookAndBorrowedBookDTO;
+import com.venturi.technology.librarysystem.model.dto.BorrowedBookDTO;
 import com.venturi.technology.librarysystem.repository.BookRepository;
 import com.venturi.technology.librarysystem.repository.BorrowedBookRepository;
 import com.venturi.technology.librarysystem.repository.StudentRepository;
@@ -26,52 +28,44 @@ import com.venturi.technology.librarysystem.service.BookService;
 public class BookServiceImpl implements BookService {
 
 	private BookRepository bookRepository;
-	private BorrowedBookRepository borrowedBookRepository;
 	private StudentRepository studentRepository;
+	private BorrowedBookRepository borrowedBookRepository;
 
-	public BookServiceImpl(BookRepository bookRepository, BorrowedBookRepository borrowedBookRepository,
-			StudentRepository studentRepository) {
+	public BookServiceImpl(BookRepository bookRepository, StudentRepository studentRepository, 
+			BorrowedBookRepository borrowedBookRepository) {
 		this.bookRepository = bookRepository;
-		this.borrowedBookRepository = borrowedBookRepository;
 		this.studentRepository = studentRepository;
+		this.borrowedBookRepository = borrowedBookRepository;
 	}
 
 	@Override
-	public BookAuthor getBookById(Long bookId) {
+	public Book getBookById(Long bookId) {
 
 		/*
-		 * bookRepository.findById(bookId) will generate below SQL query
-		 * 		select book_id, book_name, book_description from book where book_id = ?
+		 * bookRepository.findById(bookId) will generate below SQL query because BookEntity.borrowedBooks
+		 * fetch type is set to FetchType.EAGER
 		 * 
-		 * and because the related object (authorBookEntity.getAuthor()) of BookEntity is also being called within this method,
-		 * another SQL query like below will be generated only after the related object was called due to default FetchType 
-		 * of @OneToMany which is FetchType.Lazy.
-		 * 
-		 * 		select a.author_book_id, a.book_id, b.author_id, b.first_name, b.middle_name, b.last_name
-		 * 		from 
-		 * 				author_book a
-		 * 		left join 
-		 * 				author b
-		 * 					on b.author_id = a.author_id
+		 * 		select b.*, a.*, brb.*, s.*
+		 * 		from book b
+		 * 		left join author a
+		 * 				on a.author_id = b.author_id
+		 * 		left join borrowed_book brb
+		 * 				on b.book_id = brb.book_id
+		 * 		left join student s
+		 * 				on s.student_id = brb.student_id
 		 * 		where
-		 * 				a.book_id = ?
-		 * 
-		 * "left join author" was added because of AuthorBookEntity.author which is annotated as 
-		 *  @ManyToOne @JoinColumn(name = "author_id") which eagerly fetch the records of the related entity/table
-		 *  due to the default FetchType of @ManyToOne annotation which is FetchType.EAGER
-		 * 
+		 * 			a.book_id = ?
+		 *  
 		 */
 		BookEntity bookEntity = bookRepository.findById(bookId)
 				.orElseThrow(() -> new BookNotFoundException("bookId: " + bookId + " not found"));
 
-		BookAuthor bookAuthors = new BookAuthor();
+		Book bookAuthors = new Book();
 		bookAuthors.setBookId(bookEntity.getBookId());
 		bookAuthors.setBookName(bookEntity.getBookName());
 		
 		List<Author> authors = new ArrayList<>();
-		bookEntity.getAuthorBooks().forEach(authorBookEntity -> {
-			authors.add(new Author(authorBookEntity.getAuthor()));
-		});
+		authors.add(new Author(bookEntity.getAuthor()));
 		bookAuthors.setAuthors(authors);
 
 		return bookAuthors;
@@ -80,125 +74,80 @@ public class BookServiceImpl implements BookService {
 	@Override
 	public BorrowResponse processBorrowRequest(BorrowRequest borrowRequest) {
 
-		List<Long> notAvailableBooks = new ArrayList<>();
-		List<Long> availableBooks = new ArrayList<>();
-		
 		/*
 		 * studentRepository.findById(id) will generate the following SQL query:
 		 * 
-		 * select student_id, first_name, middle_name, last_name, email, birth_date
-		 * from student
-		 * where student_id = ?
+		 * select student_id, first_name, middle_name, last_name, email, birth_date from
+		 * student where student_id = ?
 		 * 
-		 * No more additional query will be generated as the related Object on StudentEntity is not being called
-		 * within this method block.
+		 * No more additional query will be generated as the related Object on
+		 * StudentEntity is not being called within this method block.
 		 * 
 		 */
-		StudentEntity studentEntity = studentRepository.findById(borrowRequest.getStudentId())
-				.orElseThrow(() -> new StudentNotFoundException("studentId: " + borrowRequest.getStudentId() + " not found"));
+		StudentEntity studentEntity = studentRepository.findById(borrowRequest.getStudentId()).orElseThrow(
+				() -> new StudentNotFoundException("studentId: [" + borrowRequest.getStudentId() + "] not found"));
 
-		borrowRequest.getBookIds().forEach(bookId -> {
-			
+		List<BookAndBorrowedBookDTO> bookAndBorrowedBookDTOs = bookRepository
+				.getBooksWithBorrowedBooksByBookIds(borrowRequest.getBookIds());
+
+		List<BorrowBookResponse> notAvailableBooks = new ArrayList<>();
+		List<BorrowBookResponse> availableBooks = new ArrayList<>();
+
+		bookAndBorrowedBookDTOs.forEach(bookAndBorrowedBookDTO -> {
+
 			/*
-			 * borrowedBookRepository.findByBookBookIdAndDateReturnedIsNull(id) will generate the following SQL query:
-			 * 
-			 * select borrowed_id, date_borrowed, date_returned, student_id, book_id 
-			 * from 
-			 * 		borrowed_book
-			 * where book_id = ?
-			 * 	 	 and date_returned IS NULL
-			 * 
-			 */
-			
-			Optional<BorrowedBookEntity> borrowedBookEntity = borrowedBookRepository
-					.findByBookBookIdAndDateReturnedIsNull(bookId);
+			 * return the first object which dateReturned equals null and dateBorrowed is not null to be 
+			 * used in validation on whether the book is still available or not.
+			*/
+			Optional<BorrowedBookDTO> borrowedBookDto = bookAndBorrowedBookDTO.getBorrowedBooks().stream()
+					.filter(borrowedBook -> (borrowedBook.getDateReturned() == null && borrowedBook.getDateBorrowed() != null))
+					.findFirst();
+						
+			if (borrowedBookDto.isPresent()) {
+				// add to not available book list
+				BorrowBookResponse notAvailableBook = new BorrowBookResponse();
+				notAvailableBook.setBookId(bookAndBorrowedBookDTO.getBookId().longValue());
+				notAvailableBook.setBookName(bookAndBorrowedBookDTO.getBookName());
+				notAvailableBook.setBookDescription(bookAndBorrowedBookDTO.getBookDescription());
+				notAvailableBook.setReason("Book is not yet returned.");
+				notAvailableBooks.add(notAvailableBook);
 
-			if (borrowedBookEntity.isPresent()) {
-				notAvailableBooks.add(bookId);
 			} else {
-				availableBooks.add(bookId);
+				// add to list of books successfully borrowed.
+				BorrowBookResponse availableBook = new BorrowBookResponse();
+				availableBook.setBookId(bookAndBorrowedBookDTO.getBookId().longValue());
+				availableBook.setBookName(bookAndBorrowedBookDTO.getBookName());
+				availableBook.setBookDescription(bookAndBorrowedBookDTO.getBookDescription());
+				availableBooks.add(availableBook);
+				
+				// insert into borrowed_book table as the book is available.
+				BookEntity bookEntity = new BookEntity();
+				bookEntity.setBookId(bookAndBorrowedBookDTO.getBookId().longValue());
+				bookEntity.setBookName(bookAndBorrowedBookDTO.getBookName());
+				bookEntity.setBookDescription(bookAndBorrowedBookDTO.getBookDescription());
+
+				BorrowedBookEntity borrowedBookInsert = new BorrowedBookEntity();
+				borrowedBookInsert.setBook(bookEntity);
+				borrowedBookInsert.setDateBorrowed(LocalDateTime.now());
+				borrowedBookInsert.setStudent(studentEntity);
+				
+				/*
+				 * borrowedBookRepository.save(entity) will generate below SQL:
+				 * 
+				 * 	insert into borrowed_book (borrowed_id, book_id, date_borrowed, date_returned, student_id)
+				 * 	values (default, ?, ?, ?, ?)
+				 * 
+				 */
+				borrowedBookRepository.save(borrowedBookInsert);
 			}
 
 		});
-		
-		// get all available books for preparation to insert in Borrowed_Book table
-		
-		/*
-		 * bookRepository.findAllById(bookIds) will generate the following query
-		 * 
-		 * select book_id, book_name, book_description from book where book_id IN (?, ?)
-		 * 
-		 * 
-		 */
-	 	List<BookEntity> availableBookEntities = bookRepository.findAllById(availableBooks);
-	 	availableBookEntities.forEach(availableBook -> {
-	 		BorrowedBookEntity borrowedBookEntity = new BorrowedBookEntity();
-	 		borrowedBookEntity.setBook(availableBook);
-	 		borrowedBookEntity.setDateBorrowed(LocalDateTime.now());
-	 		borrowedBookEntity.setStudent(studentEntity);
-	 		
-	 		/*
-	 		 * borrowedBookRepository.save(entity) will generate below SQL query
-	 		 * 
-	 		 * insert into borrowed_book (book_id, date_borrowed, date_returned, student_id, borrowed_id)
-	 		 * values (?, ?, ?, ?, default)
-	 		 * 
-	 		 */
-	 		borrowedBookRepository.save(borrowedBookEntity);
-	 	});
-	 	
-	 	
-	 	BorrowResponse borrowResponse = new BorrowResponse();
-	 	borrowResponse.setNotAvailable(getBorrowBooks(notAvailableBooks, true));
-	 	borrowResponse.setBorrowed(getBorrowBooks(availableBooks, false));
-		
+
+		BorrowResponse borrowResponse = new BorrowResponse();
+		borrowResponse.setNotAvailable(notAvailableBooks);
+		borrowResponse.setBorrowed(availableBooks);
+
 		return borrowResponse;
-	}
-
-	private List<BorrowBookResponse> getBorrowBooks(List<Long> bookIds, boolean isSetReason) {
-		
-		/*
-		 * bookRepository.findAllById(bookIds) will generate below SQL query
-		 * 		select book_id, book_name, book_description from book where book_id IN (?, ?)
-		 * 
-		 * and because the related object (authorBookEntity.getAuthor()) of BookEntity is also being called within this method,
-		 * another SQL query like below will be generated only after the related object was called due to default FetchType 
-		 * of @OneToMany which is FetchType.Lazy.
-		 * 
-		 * 		select a.author_book_id, a.book_id, b.author_id, b.first_name, b.middle_name, b.last_name
-		 * 		from 
-		 * 				author_book a
-		 * 		left join 
-		 * 				author b
-		 * 					on b.author_id = a.author_id
-		 * 		where
-		 * 				a.book_id = ?
-		 * 
-		 * "left join author" was added because of AuthorBookEntity.author which is annotated as 
-		 *  @ManyToOne @JoinColumn(name = "author_id") which eagerly fetch the records of the related entity/table
-		 *  due to the default FetchType of @ManyToOne annotation which is FetchType.EAGER
-		 * 
-		 */
-
-		List<BookEntity> bookEntities = bookRepository.findAllById(bookIds);
-		List<BorrowBookResponse> borrowBooks = new ArrayList<>();
-		bookEntities.forEach(bookEntity -> {
-			BorrowBookResponse borrowBookResponse = new BorrowBookResponse();
-			borrowBookResponse.setBookId(bookEntity.getBookId());
-			borrowBookResponse.setBookName(bookEntity.getBookName());
-			
-			List<Author> authors = new ArrayList<>();
-			bookEntity.getAuthorBooks().forEach(authorBookEntity -> {
-				authors.add(new Author(authorBookEntity.getAuthor()));
-			});
-			borrowBookResponse.setAuthors(authors);
-			if (isSetReason) {
-				borrowBookResponse.setReason("Book is not yet returned.");
-			}
-			borrowBooks.add(borrowBookResponse);
-		});
-
-		return borrowBooks;
 	}
 
 }

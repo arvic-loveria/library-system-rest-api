@@ -4,9 +4,12 @@ import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -25,10 +28,11 @@ public class BookEntity {
 	@Column(name = "book_description")
 	private String bookDescription;
 		
-	@OneToMany(mappedBy = "book")
-	private Set<AuthorBookEntity> authorBooks;
+	@ManyToOne
+	@JoinColumn(name = "author_id")
+	private AuthorEntity author;
 	
-	@OneToMany(mappedBy = "book")
+	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
 	private Set<BorrowedBookEntity> borrowedBooks;
 
 	public Long getBookId() {
@@ -55,12 +59,12 @@ public class BookEntity {
 		this.bookDescription = bookDescription;
 	}
 
-	public Set<AuthorBookEntity> getAuthorBooks() {
-		return authorBooks;
+	public AuthorEntity getAuthor() {
+		return author;
 	}
 
-	public void setAuthorBooks(Set<AuthorBookEntity> authorBooks) {
-		this.authorBooks = authorBooks;
+	public void setAuthor(AuthorEntity author) {
+		this.author = author;
 	}
 
 	public Set<BorrowedBookEntity> getBorrowedBooks() {

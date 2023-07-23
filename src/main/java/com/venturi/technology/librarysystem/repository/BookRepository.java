@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.venturi.technology.librarysystem.entity.BookEntity;
 
 @Repository
-public interface BookRepository extends JpaRepository<BookEntity, Long> {
+public interface BookRepository extends JpaRepository<BookEntity, Long>, CustomBookRepository {
 	
 }

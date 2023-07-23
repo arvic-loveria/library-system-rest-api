@@ -1,11 +1,9 @@
 package com.venturi.technology.librarysystem.service;
 
-import java.util.List;
-
-import com.venturi.technology.librarysystem.model.BookAuthor;
+import com.venturi.technology.librarysystem.model.Author;
 
 public interface AuthorService {
 
-	List<BookAuthor> getBookByAuthorId(Long authorId);
+	Author getBooksByAuthorId(Long authorId);
 	
 }

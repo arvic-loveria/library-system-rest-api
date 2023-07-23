@@ -53,14 +53,8 @@ public class BookControllerTest {
 				.andExpect(jsonPath("$.notAvailable", hasSize(0)))
 				.andExpect(jsonPath("$.borrowed[0].bookId", is(1)))
 				.andExpect(jsonPath("$.borrowed[0].bookName", is("The Hunger Games")))
-				.andExpect(jsonPath("$.borrowed[0].authors[0].authorId", is(1)))
-				.andExpect(jsonPath("$.borrowed[0].authors[0].firstName", is("Suzanne")))
-				.andExpect(jsonPath("$.borrowed[0].authors[0].lastName", is("Collins")))
 				.andExpect(jsonPath("$.borrowed[1].bookId", is(6)))
-				.andExpect(jsonPath("$.borrowed[1].bookName", is("Catching Fire")))
-				.andExpect(jsonPath("$.borrowed[1].authors[0].authorId", is(1)))
-				.andExpect(jsonPath("$.borrowed[1].authors[0].firstName", is("Suzanne")))
-				.andExpect(jsonPath("$.borrowed[1].authors[0].lastName", is("Collins")));
+				.andExpect(jsonPath("$.borrowed[1].bookName", is("Catching Fire")));
 		
 	}
 	
@@ -84,21 +78,12 @@ public class BookControllerTest {
 				.andExpect(jsonPath("$.notAvailable", hasSize(2)))
 				.andExpect(jsonPath("$.borrowed[0].bookId", is(7)))
 				.andExpect(jsonPath("$.borrowed[0].bookName", is("Gregor The Overlander")))
-				.andExpect(jsonPath("$.borrowed[0].authors[0].authorId", is(1)))
-				.andExpect(jsonPath("$.borrowed[0].authors[0].firstName", is("Suzanne")))
-				.andExpect(jsonPath("$.borrowed[0].authors[0].lastName", is("Collins")))
 				.andExpect(jsonPath("$.notAvailable[0].bookId", is(1)))
 				.andExpect(jsonPath("$.notAvailable[0].bookName", is("The Hunger Games")))
 				.andExpect(jsonPath("$.notAvailable[0].reason", is("Book is not yet returned.")))
-				.andExpect(jsonPath("$.notAvailable[0].authors[0].authorId", is(1)))
-				.andExpect(jsonPath("$.notAvailable[0].authors[0].firstName", is("Suzanne")))
-				.andExpect(jsonPath("$.notAvailable[0].authors[0].lastName", is("Collins")))
 				.andExpect(jsonPath("$.notAvailable[1].bookId", is(6)))
 				.andExpect(jsonPath("$.notAvailable[1].bookName", is("Catching Fire")))
-				.andExpect(jsonPath("$.notAvailable[1].reason", is("Book is not yet returned.")))
-				.andExpect(jsonPath("$.notAvailable[1].authors[0].authorId", is(1)))
-				.andExpect(jsonPath("$.notAvailable[1].authors[0].firstName", is("Suzanne")))
-				.andExpect(jsonPath("$.notAvailable[1].authors[0].lastName", is("Collins")));
+				.andExpect(jsonPath("$.notAvailable[1].reason", is("Book is not yet returned.")));
 		
 	}
 	

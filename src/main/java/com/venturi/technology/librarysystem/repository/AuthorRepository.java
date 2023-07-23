@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.venturi.technology.librarysystem.entity.AuthorEntity;
 
 @Repository
-public interface AuthorRepository extends JpaRepository<AuthorEntity, Long> {
+public interface AuthorRepository extends JpaRepository<AuthorEntity, Long>, CustomAuthorRepository {
 
 }

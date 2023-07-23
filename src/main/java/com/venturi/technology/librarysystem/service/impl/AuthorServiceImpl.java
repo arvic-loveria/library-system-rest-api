@@ -1,87 +1,49 @@
 package com.venturi.technology.librarysystem.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.venturi.technology.librarysystem.entity.AuthorEntity;
-import com.venturi.technology.librarysystem.entity.BorrowedBookEntity;
-import com.venturi.technology.librarysystem.exception.AuthorNotFoundException;
 import com.venturi.technology.librarysystem.model.Author;
-import com.venturi.technology.librarysystem.model.BookAuthor;
+import com.venturi.technology.librarysystem.model.dto.AuthorDTO;
+import com.venturi.technology.librarysystem.model.dto.BookDTO;
 import com.venturi.technology.librarysystem.repository.AuthorRepository;
-import com.venturi.technology.librarysystem.repository.BorrowedBookRepository;
 import com.venturi.technology.librarysystem.service.AuthorService;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
 
-	private BorrowedBookRepository borrowedBookRepository;
 	private AuthorRepository authorRepository;
 
-	public AuthorServiceImpl(BorrowedBookRepository borrowedBookRepository, AuthorRepository authorRepository) {
-		this.borrowedBookRepository = borrowedBookRepository;
+	public AuthorServiceImpl(AuthorRepository authorRepository) {
 		this.authorRepository = authorRepository;
 	}
 
 	@Override
-	public List<BookAuthor> getBookByAuthorId(Long authorId) {
-
-		/*
-		 * authorRepository.findById will generate below SQL query:
-		 * 		select author_id, first_name, middle_name, last_name from author where author_id = ?
-		 *  
-		 * and because the related Object(authorEntity.getAuthorBooks()) of AuthorEntity is being called 
-		 * within this method it will generate another SQL query like below, only after the related object was called 
-		 * due to default FetchType of @OneToMany which is FetchType.Lazy.
-		 * 
-		 * 		select a.author_book_id, a.author_id, b.book_id, b.book_name, b.book_description 
-		 * 		from 
-		 * 			author_book a
-		 * 		left join 
-		 * 			book b 
-		 * 				on b.book_id = a.book_id
-		 * 		where 
-		 *  		a.author_id = ?
-		 * 
-		 * "left join book" was added because of AuthorBookEntity.book is annotated as 
-		 *  @ManyToOne @JoinColumn(name = "book_id") which eagerly fetch the records of the related entity/table
-		 *  due to the default FetchType of @ManyToOne annotation which is FetchType.EAGER
-		 *  
-		 */
-		AuthorEntity authorEntity = authorRepository.findById(authorId)
-				.orElseThrow(() -> new AuthorNotFoundException("authorId: " + authorId + " not found"));
-
-		List<BookAuthor> bookAuthors = new ArrayList<>();
-		authorEntity.getAuthorBooks().forEach(authorBookEntity -> {
+	public Author getBooksByAuthorId(Long authorId) {
+		
+		AuthorDTO authorDto = authorRepository.getBooksByAuthorId(authorId);
 			
-			/*
-			 * borrowedBookRepository.findByBookBookIdAndDateReturnedIsNull(id) will generate the following query
-			 * 
-			 * select borrowed_id, book_id, student_id, date_borrowed, date_returned
-			 * from borrowed_book
-			 * where book_id = ?
-			 * 		 and date_returned IS NULL
-			 * 
-			 */
-			Optional<BorrowedBookEntity> borrowedBookEntity = borrowedBookRepository
-					.findByBookBookIdAndDateReturnedIsNull(authorBookEntity.getBook().getBookId());
-
-			List<Author> authors = new ArrayList<>();
-
-			if (!borrowedBookEntity.isPresent()) {
-				BookAuthor bookAuthor = new BookAuthor();
-				authors.add(new Author(authorBookEntity.getAuthor()));
-				bookAuthor.setAuthors(authors);
-				bookAuthor.setBookId(authorBookEntity.getBook().getBookId());
-				bookAuthor.setBookName(authorBookEntity.getBook().getBookName());
-				bookAuthors.add(bookAuthor);
-			}
-		});
-
-		return bookAuthors;
+		/*
+		 *  retrieve all available books based on the record from borrowed_book table.
+		 *  If dateBorrowed is null, it means no record exist in borrowed_book table which means the book is available.
+		 *  If dateBorrowed is not null and dateReturned is not null, it means there's a record in borrowed_book table
+		 *  but was already returned, which means the book is available. Otherwise, the book is not available.
+		*/
+	 	List<BookDTO> availableBooks = authorDto.getBooks().stream()
+				.filter(book -> (null == book.getDateBorrowed()
+						|| (null != book.getDateBorrowed() && null != book.getDateReturned())))
+				.collect(Collectors.toList());
+	 	
+	 	Author author = new Author();
+		author.setAuthorId(authorDto.getAuthorId().longValue());
+		author.setFirstName(authorDto.getAuthorFirstName());
+		author.setMiddleName(authorDto.getAuthorMiddleName());
+		author.setLastName(authorDto.getAuthorLastName());
+		author.setBooks(availableBooks);
+		
+		return author;
 	}
 
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.venturi.technology.librarysystem.mapping.BorrowRequest;
-import com.venturi.technology.librarysystem.model.BookAuthor;
+import com.venturi.technology.librarysystem.model.Book;
 import com.venturi.technology.librarysystem.model.BorrowResponse;
 import com.venturi.technology.librarysystem.service.BookService;
 
@@ -24,7 +24,7 @@ public class BookController {
 	}
 	
 	@GetMapping("/{bookId}")
-	public ResponseEntity<BookAuthor> getBookById(@PathVariable("bookId") Long bookId) {
+	public ResponseEntity<Book> getBookById(@PathVariable("bookId") Long bookId) {
 		
 		return ResponseEntity.ok(bookService.getBookById(bookId));
 	}

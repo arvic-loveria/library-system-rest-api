@@ -1,14 +1,12 @@
 package com.venturi.technology.librarysystem.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.venturi.technology.librarysystem.model.BookAuthor;
+import com.venturi.technology.librarysystem.model.Author;
 import com.venturi.technology.librarysystem.service.AuthorService;
 
 @RestController
@@ -22,9 +20,9 @@ public class AuthorController {
 	}
 
 	@GetMapping("/{authorId}/books")
-	public ResponseEntity<List<BookAuthor>> getBooksByAuthorId(@PathVariable("authorId") Long authorId){
+	public ResponseEntity<Author> getBooksByAuthorId(@PathVariable("authorId") Long authorId){
 		
-		return ResponseEntity.ok(authorService.getBookByAuthorId(authorId));
+		return ResponseEntity.ok(authorService.getBooksByAuthorId(authorId));
 	}
 	
 }

@@ -13,14 +13,14 @@
 			</preConditions>
 			<!-- Create Table -->
 			<sql dbms="h2, oracle" splitStatements="true">
-				INSERT INTO BOOK (book_name, book_description) VALUES ('The Hunger Games', null);
-				INSERT INTO BOOK (book_name, book_description) VALUES ('Harry Potter and the Order of the Phoenix', null);
-				INSERT INTO BOOK (book_name, book_description) VALUES ('Pride and Prejudice', null);
-				INSERT INTO BOOK (book_name, book_description) VALUES ('To Kill a Mockingbird', null);
-				INSERT INTO BOOK (book_name, book_description) VALUES ('Twilight', null);
-				INSERT INTO BOOK (book_name, book_description) VALUES ('Catching Fire', null);
-				INSERT INTO BOOK (book_name, book_description) VALUES ('Gregor The Overlander', null);
-				INSERT INTO BOOK (book_name, book_description) VALUES ('The Ballad of Songbirds and Snakes', null);
+				INSERT INTO BOOK (book_name, book_description, author_id) VALUES ('The Hunger Games', null , (select author_id from author where first_name = 'Suzanne'));
+				INSERT INTO BOOK (book_name, book_description, author_id) VALUES ('Harry Potter and the Order of the Phoenix', null, (select author_id from author where first_name = 'J.K.'));
+				INSERT INTO BOOK (book_name, book_description, author_id) VALUES ('Pride and Prejudice', null, (select author_id from author where first_name = 'Jane'));
+				INSERT INTO BOOK (book_name, book_description, author_id) VALUES ('To Kill a Mockingbird', null, (select author_id from author where first_name = 'Harper'));
+				INSERT INTO BOOK (book_name, book_description, author_id) VALUES ('Twilight', null, (select author_id from author where first_name = 'Stephenie'));
+				INSERT INTO BOOK (book_name, book_description, author_id) VALUES ('Catching Fire', null, (select author_id from author where first_name = 'Suzanne'));
+				INSERT INTO BOOK (book_name, book_description, author_id) VALUES ('Gregor The Overlander', null, (select author_id from author where first_name = 'Suzanne'));
+				INSERT INTO BOOK (book_name, book_description, author_id) VALUES ('The Ballad of Songbirds and Snakes', null, (select author_id from author where first_name = 'Suzanne'));
 			</sql>
 			<comment>Inserted new record in table 'BOOK'</comment>
 		</changeSet>
