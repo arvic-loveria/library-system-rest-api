@@ -9,12 +9,10 @@
     <include file="table/db.changelog-student-1.0.xml" relativeToChangelogFile="true"/>
     <include file="table/db.changelog-author-1.0.xml" relativeToChangelogFile="true"/>
     <include file="table/db.changelog-book-1.0.xml" relativeToChangelogFile="true"/>
-    <include file="table/db.changelog-author-book-1.0.xml" relativeToChangelogFile="true"/>
     <include file="table/db.changelog-borrowed-book-1.0.xml" relativeToChangelogFile="true"/>
     
     <include file="data/db.changelog-author-1.0.xml" relativeToChangelogFile="true"/>
     <include file="data/db.changelog-book-1.0.xml" relativeToChangelogFile="true"/>
-    <include file="data/db.changelog-author-book-1.0.xml" relativeToChangelogFile="true"/>
     <include file="data/db.changelog-student-1.0.xml" relativeToChangelogFile="true"/>
     
 </databaseChangeLog>
